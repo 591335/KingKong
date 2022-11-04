@@ -88,6 +88,20 @@ function createPlane(size, texture, position) {
 const warPlane = createPlane(1, new THREE.TextureLoader().load('images/rock.png'), {x: -5, y: 15, z: 0});
 const jetPlane = createPlane(2, new THREE.TextureLoader().load('images/rock.png'), {x: 5, y: 15, z: 0});
 
+// CatMulRomCurve3 closed loop
+const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3( -10, 12, 10 ),
+    new THREE.Vector3( -5, 10, 5 ),
+    new THREE.Vector3( 0, 15, 0 ),
+    new THREE.Vector3( 5, 11, 5 ),
+    new THREE.Vector3( 10, 16, 10 )
+]);
+curve.closed = true;
+const points = curve.getPoints( 50 );
+const geometryCurve = new THREE.BufferGeometry().setFromPoints( points );
+const materialCurve = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+const curveObject = new THREE.Line( geometryCurve, materialCurve );
+scene.add( curveObject );
 
 // TODO: implement terrain.
 const size = 128;
