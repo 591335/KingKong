@@ -85,8 +85,8 @@ function createPlane(size, texture, position) {
 }
 
 // Create planes and automatically add them to the scene
-const warPlane = createPlane(1, new THREE.TextureLoader().load('images/Plane.png'), {x: -5, y: 15, z: 0});
-const jetPlane = createPlane(2, new THREE.TextureLoader().load('images/Plane.png'), {x: 5, y: 15, z: 0});
+const warPlane = createPlane(1, new THREE.TextureLoader().load('images/rock.png'), {x: -5, y: 15, z: 0});
+const jetPlane = createPlane(2, new THREE.TextureLoader().load('images/rock.png'), {x: 5, y: 15, z: 0});
 
 
 // TODO: implement terrain.
@@ -148,12 +148,18 @@ function updateRendererSize() {
     }
 }
 
+
 function loop() {
     updateRendererSize();
+
 
     // Rotate plane around centerNode
     centerNode.rotation.y += 0.01;
     renderer.render(scene, camera);
+
+    // Move plane in sine wave up and down
+    warPlane.position.y = 15 + Math.sin(Date.now() / 1000) * 2;
+    jetPlane.position.y = 15 + Math.sin(Date.now() / 1000) * 2;
 
 }
 
