@@ -1,9 +1,9 @@
 "use strict";
 
 import * as THREE from "./three.module.js";
-import { getHeightmapData } from "./utils.js";
+import {getHeightmapData} from "./utils.js";
 import TextureSplattingMaterial from "./TextureSplattingMaterial.js";
-import { OrbitControls } from "./OrbitControls.js";
+import {OrbitControls} from "./OrbitControls.js";
 import {VRButton} from "../Common/VRButton.js";
 
 
@@ -22,7 +22,7 @@ const scene = new THREE.Scene()
 {
     //Skybox
     const loader = new THREE.CubeTextureLoader();
-    const texture = loader.load([
+    scene.background = loader.load([
         'images/Daylight_Right.jpg',
         'images/Daylight_Left.jpg',
         'images/Daylight_Top.jpg',
@@ -30,8 +30,7 @@ const scene = new THREE.Scene()
         'images/Daylight_Front.jpg',
         'images/Daylight_Back.jpg',
     ]);
-    scene.background = texture;
-};
+}
 
 //Camera for vr
 const vrCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -61,6 +60,20 @@ scene.add(axesHelper);
 
 const sun = new THREE.DirectionalLight(white, 1.0);
 scene.add(sun);
+
+// Implement a centerNode
+const centerNode = new THREE.Group();
+// Implement first planeNode
+const planeNode = new THREE.SphereGeometry(1, 32, 32);
+const planeMat = new THREE.MeshBasicMaterial({color: 0x00ff00, side: THREE.DoubleSide});
+const plane = new THREE.Mesh(planeNode, planeMat);
+// Add plane to scene
+centerNode.add(plane);
+// Add centerNode to scene
+scene.add(centerNode);
+// Translate planeNode
+plane.position.set(5, 15, 0);
+
 
 // TODO: implement terrain.
 const size = 128;
@@ -123,7 +136,12 @@ function updateRendererSize() {
 
 function loop() {
     updateRendererSize();
+
+
+    // Rotate plane around centerNode
+    centerNode.rotation.y += 0.01;
     renderer.render(scene, camera);
+
 }
 
 renderer.setAnimationLoop(loop);
