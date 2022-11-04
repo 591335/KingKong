@@ -5,6 +5,7 @@ import { getHeightmapData } from "./utils.js";
 import TextureSplattingMaterial from "./TextureSplattingMaterial.js";
 import { OrbitControls } from "./OrbitControls.js";
 import {VRButton} from "../Common/VRButton.js";
+import { addTreeSprite } from "./Sprite.js";
 
 //Camera start
 const canvas = document.querySelector("canvas   "); //Get canvas
@@ -34,33 +35,8 @@ const scene = new THREE.Scene();
     scene.background = texture;
 }
 
-//function to add a treesprite to the scene
-function createTreeSprite(x, y, z, name) {
-    const map = new THREE.TextureLoader().load('images/tree.png');
-    const SpriteMaterial = new THREE.SpriteMaterial({map: map});
+addTreeSprite(scene);
 
-    name = new THREE.Sprite(SpriteMaterial);
-    scene.add(name)
-    //translate the sprite to the correct position
-    name.position.set(x, y, z);
-    //scale the sprite
-    name.scale.set(1, 2, 2);
-
-}
-//adds a set number of sprites using createTreeSprite function with random positions
-function addTreeSprite(){
-    for(let i = 0; i < 20; i++){
-        const rndInt = Math.floor(Math.random() * -6) + -1;
-        const rndInt2 = Math.floor(Math.random() * -6) + -1;
-        console.log(rndInt);
-        console.log(rndInt2);
-        //String name that has index
-        let name = "sprite" + i;
-        console.log(name);
-        createTreeSprite(rndInt, 1, rndInt2, name);
-    }
-}
-addTreeSprite();
 
 //const sprite2 = sprite.clone();
 //scene.add( sprite2 );
@@ -127,7 +103,7 @@ const material = new TextureSplattingMaterial({
     alphaMaps: [alpha]
 });
 
-material.wireframe = false; // Fjerner wireframe
+material.wireframe = true; // Fjerner wireframe
 
 
 function updateRendererSize() {
