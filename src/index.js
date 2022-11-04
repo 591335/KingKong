@@ -7,7 +7,7 @@ import { OrbitControls } from "./OrbitControls.js";
 import {VRButton} from "../Common/VRButton.js";
 
 //Camera start
-const canvas = document.querySelector("canvas"); //Get canvas
+const canvas = document.querySelector("canvas   "); //Get canvas
 const renderer = new THREE.WebGLRenderer({canvas});
 renderer.xr.enabled = true; // Enable VR
 renderer.setSize(window.innerWidth, window.innerHeight); // set the size of the renderer
@@ -20,6 +20,50 @@ const white = new THREE.Color(THREE.Color.NAMES.white);
 renderer.setClearColor(white, 1.0);
 
 const scene = new THREE.Scene();
+
+{
+    const loader = new THREE.CubeTextureLoader();
+    const texture = loader.load([
+        'images/Skybox/Daylight_Right.jpg',
+        'images/Skybox/Daylight_Left.jpg',
+        'images/Skybox/Daylight_Top.jpg',
+        'images/Skybox/Daylight_Bottom.jpg',
+        'images/Skybox/Daylight_Front.jpg',
+        'images/Skybox/Daylight_Back.jpg',
+    ]);
+    scene.background = texture;
+}
+
+//function to add a treesprite to the scene
+function createTreeSprite(x, y, z, name) {
+    const map = new THREE.TextureLoader().load('images/tree.png');
+    const SpriteMaterial = new THREE.SpriteMaterial({map: map});
+
+    name = new THREE.Sprite(SpriteMaterial);
+    scene.add(name)
+    //translate the sprite to the correct position
+    name.position.set(x, y, z);
+    //scale the sprite
+    name.scale.set(1, 2, 2);
+
+}
+//adds a set number of sprites using createTreeSprite function with random positions
+function addTreeSprite(){
+    for(let i = 0; i < 20; i++){
+        const rndInt = Math.floor(Math.random() * -6) + -1;
+        const rndInt2 = Math.floor(Math.random() * -6) + -1;
+        console.log(rndInt);
+        console.log(rndInt2);
+        //String name that has index
+        let name = "sprite" + i;
+        console.log(name);
+        createTreeSprite(rndInt, 1, rndInt2, name);
+    }
+}
+addTreeSprite();
+
+//const sprite2 = sprite.clone();
+//scene.add( sprite2 );
 
 const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 camera.position.z += 0;
