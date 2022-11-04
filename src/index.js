@@ -63,16 +63,30 @@ scene.add(sun);
 
 // Implement a centerNode
 const centerNode = new THREE.Group();
-// Implement first planeNode
-const planeNode = new THREE.SphereGeometry(1, 32, 32);
-const planeMat = new THREE.MeshBasicMaterial({color: 0x00ff00, side: THREE.DoubleSide});
-const plane = new THREE.Mesh(planeNode, planeMat);
-// Add plane to scene
-centerNode.add(plane);
+
 // Add centerNode to scene
 scene.add(centerNode);
-// Translate planeNode
-plane.position.set(5, 15, 0);
+
+// Function to create plane
+function createPlane(size, texture, position) {
+    // Create plane geometry
+    const geometry = new THREE.SphereGeometry(size, 32, 32);
+    // Create plane material
+    const material = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide});
+    // Create plane mesh
+    const plane = new THREE.Mesh(geometry, material);
+    // Set plane position
+    plane.position.set(position.x, position.y, position.z);
+    // Add to scene
+    scene.add(plane);
+    // Return plane
+    centerNode.add(plane);
+    return plane;
+}
+
+// Create planes and automatically add them to the scene
+const warPlane = createPlane(1, new THREE.TextureLoader().load('images/Plane.png'), {x: -5, y: 15, z: 0});
+const jetPlane = createPlane(2, new THREE.TextureLoader().load('images/Plane.png'), {x: 5, y: 15, z: 0});
 
 
 // TODO: implement terrain.
@@ -136,7 +150,6 @@ function updateRendererSize() {
 
 function loop() {
     updateRendererSize();
-
 
     // Rotate plane around centerNode
     centerNode.rotation.y += 0.01;
