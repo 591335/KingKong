@@ -35,11 +35,9 @@ const scene = new THREE.Scene();
     scene.background = texture;
 }
 
-addTreeSprite(scene);
 
 
-//const sprite2 = sprite.clone();
-//scene.add( sprite2 );
+
 
 const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 camera.position.z += 0;
@@ -82,6 +80,8 @@ terrainImage.onload = () => {
 };
 
 terrainImage.src = 'images/byMiljo.png'; // Importerer bilde til terreng
+
+addTreeSprite(scene);
 
 const rock = new THREE.TextureLoader().load('images/rock.png');
 const grass = new THREE.TextureLoader().load('images/road.png');

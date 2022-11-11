@@ -14,6 +14,8 @@ function createTreeSprite(x, y, z, name, scene){
     name.scale.set(1, 2, 2);
 
 }
+
+
 //Gaussian random number generator
 function randn_bm(min, max, skew) {
     let u = 0, v = 0;
@@ -44,9 +46,11 @@ function addTreeSprite(scene){
         console.log(rndInt);
         console.log(rndInt2);
         //String name that has index
+        //const y = getHeightAt(rndInt, rndInt2, scene);
         let name = "sprite" + i;
         console.log(name);
         createTreeSprite(rndInt, 1, rndInt2, name, scene);
     }
 }
+
 export {addTreeSprite};
