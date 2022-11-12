@@ -54,12 +54,12 @@ scene.add(camera);
 
 const loader = new THREE.CubeTextureLoader();
 const texture = loader.load([
-  'images/Daylight_Right.jpg',
-  'images/Daylight_Left.jpg',
-  'images/Daylight_Top.jpg',
-  'images/Daylight_Bottom.jpg',
-  'images/Daylight_Front.jpg',
-  'images/Daylight_Back.jpg',
+  'images/sky/Daylight_Right.jpg',
+  'images/sky/Daylight_Left.jpg',
+  'images/sky/Daylight_Top.jpg',
+  'images/sky/Daylight_Bottom.jpg',
+  'images/sky/Daylight_Front.jpg',
+  'images/sky/Daylight_Back.jpg',
 ]);
 scene.background = texture;
 
@@ -124,19 +124,74 @@ terrainImage.onload = () => {
   scene.add(mesh);
 };
 
-const texLoad = new THREE.TextureLoader();
-const texCube = texLoad.load('models/building/textures/buildingBase.png');
+const texLoad0 = new THREE.TextureLoader();
+const texCube0 = texLoad0.load('models/building/textures/building0.jpg');
+
+texCube0.wrapS = THREE.RepeatWrapping;
+texCube0.wrapT = THREE.RepeatWrapping;
+
+texCube0.repeat.multiplyScalar(5);
+
+const cube0 = new THREE.Mesh(
+    new THREE.BoxGeometry(30,240,30),
+    new THREE.MeshPhongMaterial({
+      map: texCube0
+    })
+);
+cube0.receiveShadow = true;
+cube0.castShadow = true;
+
+const texLoad1 = new THREE.TextureLoader();
+const texCube1 = texLoad1.load('models/building/textures/building1.jpg');
+
+texCube1.wrapS = THREE.RepeatWrapping;
+texCube1.wrapT = THREE.RepeatWrapping;
+
+texCube1.repeat.multiplyScalar(2);
 
 const cube1 = new THREE.Mesh(
-    new THREE.BoxGeometry(30,300,30),
+    new THREE.BoxGeometry(30,240,30),
     new THREE.MeshPhongMaterial({
-      map: texCube
+      map: texCube1
     })
 );
 cube1.receiveShadow = true;
 cube1.castShadow = true;
 
-let done = 0;
+const texLoad2 = new THREE.TextureLoader();
+const texCube2 = texLoad2.load('models/building/textures/building2.jpg');
+
+texCube2.wrapS = THREE.RepeatWrapping;
+texCube2.wrapT = THREE.RepeatWrapping;
+
+texCube2.repeat.multiplyScalar(2);
+
+const cube2 = new THREE.Mesh(
+    new THREE.BoxGeometry(40,250,40),
+    new THREE.MeshPhongMaterial({
+      map: texCube2
+    })
+);
+cube2.receiveShadow = true;
+cube2.castShadow = true;
+
+const texLoad3 = new THREE.TextureLoader();
+const texCube3 = texLoad3.load('models/building/textures/building3.jpg');
+
+texCube3.wrapS = THREE.RepeatWrapping;
+texCube3.wrapT = THREE.RepeatWrapping;
+
+texCube3.repeat.multiplyScalar(5);
+
+const cube3 = new THREE.Mesh(
+    new THREE.BoxGeometry(55,130,75),
+    new THREE.MeshPhongMaterial({
+      map: texCube3
+    })
+);
+cube3.receiveShadow = true;
+cube3.castShadow = true;
+
 
 let building0 = [new THREE.Object3D(),
   new THREE.Object3D(),
@@ -147,12 +202,16 @@ let building0 = [new THREE.Object3D(),
 let building1 = [new THREE.Object3D(),
   new THREE.Object3D()];
 
-let buildings = [building0,building1];
-const ranges = [[0.0,5.0,10.0,25.0,50.0],[0.0,50.0]];
+let building2 = [new THREE.Object3D(),
+    new THREE.Object3D];
 
-const buildingl = 'models/building/building';
-let total = 0;
-let index = 0;
+let building3 = [new THREE.Object3D(),
+    new THREE.Object3D()];
+
+let buildings = [building0,building1,building2,building3];
+const ranges = [[0.0,5.0,10.0,20.0,30.0],[0.0,30.0],[0.0,30.0],[0.0,30.0]];
+
+const buildingUrl = 'models/building/building';
 
 
 getModel('models/planes/plane.glb',0,(gltf,ind)=>{
@@ -167,56 +226,98 @@ getModel('models/planes/plane.glb',0,(gltf,ind)=>{
   scene.add(gltf.scene);
 });
 
+let amount = 4;
+let done = 4;
 
-
-function doesFileExist(urlToFile) {
-  const xhr = new XMLHttpRequest();
-  xhr.open('HEAD', urlToFile, false);
-  xhr.send();
-
-  if (xhr.status == "404") {
-    return false;
+building0.forEach((building, index) => {
+  if(index < amount) {
+    getModel(buildingUrl + '0_' + index + '.glb', 0, (gltf, ind) => {
+      gltf.scene.traverse((node) => {
+        if (node.isMesh) {
+          node.receiveShadow = true;
+          node.castShadow = true;
+        }
+      });
+      building.add(gltf.scene);
+      gltf.scene.scale.set(1.0,1.0,1.0);
+      done--;
+    });
   } else {
-    return true;
+    console.log(index);
   }
-}
-while(doesFileExist(buildingl + '0_' + index +'.glb')){
-  console.log(buildingl + '0_' + index +'.glb');
-  getModel(buildingl + '0_' + index +'.glb', index,(gltf,ind)=>{
-      gltf.scene.traverse(function (node) {
-      if (node.isMesh) {
-        node.receiveShadow = true;
-        node.castShadow = true;
-      }
-    });
-      building0[ind].add(gltf.scene.children[0]);
-      done++;
-  });
-  index++;
-}
+});
 
-building0[4].add(cube1.clone(true));
-total = index;
-index = 0;
-while(doesFileExist(buildingl + '1_' + index +'.glb')){
-  console.log(buildingl + '1_' + index +'.glb');
-  getModel(buildingl + '1_' + index +'.glb', index,(gltf,ind)=>{
-    gltf.scene.traverse(function (node) {
-      if (node.isMesh) {
-        node.receiveShadow = true;
-        node.castShadow = true;
-      }
-    });
-    gltf.scene.children[0].scale.set(15.0,1.5,15.0);
-    building1[ind].add(gltf.scene.children[0]);
-    done++;
-  });
-  index++;
-}
-building1[index].add(cube1.clone(true));
+amount = 1;
+done += 1;
 
-total += index;
-//building4.add(cube1);
+building1.forEach((building, index) => {
+  if(index < amount) {
+    getModel(buildingUrl + '1_' + index + '.glb', 0, (gltf, ind) => {
+      gltf.scene.traverse((node) => {
+        if (node.isMesh) {
+          node.receiveShadow = true;
+          node.castShadow = true;
+        }
+      });
+      building.add(gltf.scene);
+      gltf.scene.scale.set(15.0,20.0,15.0);
+      done--;
+
+    });
+  } else {
+    console.log(index);
+  }
+});
+
+amount = 1;
+done += 1;
+
+building2.forEach((building, index) => {
+  if(index < amount) {
+    getModel(buildingUrl + '2_' + index + '.glb', 0, (gltf, ind) => {
+      gltf.scene.traverse((node) => {
+        if (node.isMesh) {
+          node.receiveShadow = true;
+          node.castShadow = true;
+        }
+      });
+      building.add(gltf.scene);
+      gltf.scene.scale.set(2.0,2.5,2.0);
+      done--;
+    });
+  } else {
+    console.log(index);
+  }
+});
+
+amount = 1;
+done += 1;
+
+building3.forEach((building, index) => {
+  if(index < amount) {
+    getModel(buildingUrl + '3_' + index + '.glb', 0, (gltf, ind) => {
+      gltf.scene.traverse((node) => {
+        if (node.isMesh) {
+          node.receiveShadow = true;
+          node.castShadow = true;
+        }
+      });
+      building.add(gltf.scene);
+      gltf.scene.scale.set(2.0,2.0,1.5);
+      done--;
+    });
+  } else {
+    console.log(index);
+  }
+});
+
+building0[4].add(cube0.clone(true));
+
+building1[1].add(cube1.clone(true));
+
+building2[1].add(cube2.clone(true));
+
+building3[1].add(cube3.clone(true));
 
 // x = [-26 , -8]
 // y = [-28 ,-10]
@@ -225,12 +326,10 @@ total += index;
 // max y [-95,95]
 
 let maxDist = 35;
-let spacing = 4;
+let spacing = 3;
 
 function waitForElement() {
-  console.log(done);
-  console.log(total);
-  if(done < total){
+  if(done > 0){
     setTimeout(waitForElement,250);
   } else {
     let x = -maxDist;
@@ -239,15 +338,13 @@ function waitForElement() {
       while(y<maxDist){
         if(Math.sqrt(x*x+y*y) < maxDist && (x < -26 || x > -8 || y < -28 || y > -10) && (x < -3 || x > 3 || y < -2 || y > 2)) {
           const i = Math.floor(Math.random()*buildings.length);
-          console.log(i);
           const lod = LODModel(
               buildings[i].map((model) => model.clone(true)),
               scene,
               0.04,
-              x + Math.random() * 3 - 1, 2.05, y + Math.random() * 3 - 1,
+              x + Math.random() - 0.5, 2.05, y + Math.random() - 0.5,
               ranges[i]
           );
-          console.log(lod);
           scene.add(lod);
         }
         y += spacing;
@@ -266,7 +363,7 @@ let water = new Water(waterGeometry,
     {
       textureWidth: 512,
       textureHeight: 512,
-      waterNormals: new THREE.TextureLoader().load('images/waternormals.jpg',(texture) => {
+      waterNormals: new THREE.TextureLoader().load('images/map/waternormals.jpg',(texture) => {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       }),
       sunDirection: new THREE.Vector3(),
@@ -292,26 +389,48 @@ getModel('models/empire_state/empireState.glb',0,(model) => {
   scene.add(model.scene);
 });
 
-terrainImage.src = 'images/HeightMap.png';
+terrainImage.src = 'images/map/HeightMap.png';
 
-const road = new THREE.TextureLoader().load('images/road/road_12.jpg');
-const grass = new THREE.TextureLoader().load('images/grass.png');
-const alpha = new THREE.TextureLoader().load('images/terrain.png');
+const road = new THREE.TextureLoader().load('images/ground/road.jpg');
+const ground = new THREE.TextureLoader().load('images/ground/ground.png');
+const marking = new THREE.TextureLoader().load('images/ground/marking.png');
+const people = new THREE.TextureLoader().load('images/ground/people.png');
+const grass1 = new THREE.TextureLoader().load('images/ground/grass.png');
+const grass2 = new THREE.TextureLoader().load('images/ground/grass2.png');
+const flower = new THREE.TextureLoader().load('images/ground/flower.png');
 
-grass.wrapS = THREE.RepeatWrapping;
-grass.wrapT = THREE.RepeatWrapping;
-
+const alpha1 = new THREE.TextureLoader().load('images/map/sidewalk.png');
+const alpha2 = new THREE.TextureLoader().load('images/map/road.png');
+const alpha3 = new THREE.TextureLoader().load('images/map/people.png');
+const alpha4 = new THREE.TextureLoader().load('images/map/terrain.png');
+const alpha5 = new THREE.TextureLoader().load('images/map/grass.png');
+const alpha6 = new THREE.TextureLoader().load('images/map/flower.png');
 
 road.wrapS = THREE.RepeatWrapping;
+ground.wrapS = THREE.RepeatWrapping;
+people.wrapS = THREE.RepeatWrapping;
+grass1.wrapS = THREE.RepeatWrapping;
+grass2.wrapS = THREE.RepeatWrapping;
+flower.wrapS = THREE.RepeatWrapping;
+
 road.wrapT = THREE.RepeatWrapping;
+ground.wrapT = THREE.RepeatWrapping;
+people.wrapT = THREE.RepeatWrapping;
+grass1.wrapT = THREE.RepeatWrapping;
+grass2.wrapT = THREE.RepeatWrapping;
+flower.wrapT = THREE.RepeatWrapping;
 
 road.repeat.multiplyScalar(500);
-grass.repeat.multiplyScalar(100);
+ground.repeat.multiplyScalar(200);
+people.repeat.multiplyScalar(500);
+grass1.repeat.multiplyScalar(1000);
+grass2.repeat.multiplyScalar(1000);
+flower.repeat.multiplyScalar(300);
 
 const material = new TextureSplattingMaterial({
   color: THREE.Color.NAMES.grey,
-  colorMaps: [road,grass],
-  alphaMaps: [alpha]
+  colorMaps: [road,ground,marking,people,grass1,grass2,flower],
+  alphaMaps: [alpha1,alpha2,alpha3,alpha4,alpha5,alpha6]
 });
 
 material.wireframe = false;
@@ -335,13 +454,9 @@ function updateRendererSize() {
 
 function loop() {
   updateRendererSize();
-  //console.log(lod.getCurrentLevel());
-  console.log(scene.children);
-  if (scene.children[6] !== undefined) {
-    //console.log(scene.children[6].getCurrentLevel());
-  }
-  //console.log(building0);
   water.material.uniforms['time'].value += 1.0/240.0;
+
+  console.log(building1);
 
   renderer.render(scene, camera);
 }

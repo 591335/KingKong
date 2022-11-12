@@ -4,8 +4,41 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b5cfb1d2-c1a9-4e0f-ba40-e7db4859941c" name="Changes" comment="push">
+    <list default="true" id="b5cfb1d2-c1a9-4e0f-ba40-e7db4859941c" name="Changes" comment="lagt til fly">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/City_Grid.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Daylight_Back.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Daylight_Bottom.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Daylight_Front.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Daylight_Left.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Daylight_Right.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Daylight_Top.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/HeightMap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Park_Heightmap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/Park_texture.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/byMiljo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/grass.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (1).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (10).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (11).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (13).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (14).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (15).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (16).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (2).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (3).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (4).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (5).JPG" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (6).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (7).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (8).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road texture pack-seamless (9).jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road/road_12.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/rock.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/sky.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/terrain.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/waternormals.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -86,7 +119,13 @@
       <option name="presentableId" value="LOCAL−00002" />
       <updated>1668165840367</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL−00003" summary="lagt til fly">
+      <created>1668266737492</created>
+      <option name="number" value="LOCAL−00003" />
+      <option name="presentableId" value="LOCAL−00003" />
+      <updated>1668266737492</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -106,6 +145,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="merging" />
     <MESSAGE value="added VR" />
-    <option name="LAST_COMMIT_MESSAGE" value="added VR" />
+    <MESSAGE value="lagt til fly" />
+    <option name="LAST_COMMIT_MESSAGE" value="lagt til fly" />
   </component>
 </project>
