@@ -3,11 +3,8 @@
 import * as THREE from "./three.module.js";
 import { getHeightmapData } from "./utils.js";
 import TextureSplattingMaterial from "./TextureSplattingMaterial.js";
-import {getModel, LODModel} from "../models/ModelLoader.js";
-import {OrbitControls} from "./OrbitControls.js";
-import {Water} from "./Water.js";
-import {VRButton} from "../Common/VRButton.js"
-import { addTreeSprite } from "./sprite.js";
+import { OrbitControls } from "./OrbitControls.js";
+import {VRButton} from "../Common/VRButton.js";
 
 
 const renderer = new THREE.WebGLRenderer({
@@ -22,7 +19,20 @@ renderer.shadowMap.enabled = true;
 const white = new THREE.Color(THREE.Color.NAMES.white);
 renderer.setClearColor(white, 1.0);
 
-const scene = new THREE.Scene();
+const scene = new THREE.Scene()
+{
+    //Skybox
+    const loader = new THREE.CubeTextureLoader();
+    const texture = loader.load([
+        'images/Daylight_Right.jpg',
+        'images/Daylight_Left.jpg',
+        'images/Daylight_Top.jpg',
+        'images/Daylight_Bottom.jpg',
+        'images/Daylight_Front.jpg',
+        'images/Daylight_Back.jpg',
+    ]);
+    scene.background = texture;
+};
 
 //Camera for vr
 renderer.xr.enabled = true; // Enable VR
@@ -413,19 +423,8 @@ function updateRendererSize() {
 }
 
 function loop() {
-  updateRendererSize();
-  //console.log(lod.getCurrentLevel());
-  console.log(scene.children);
-  if (scene.children[6] !== undefined) {
-    //console.log(scene.children[6].getCurrentLevel());
-  }
-  //console.log(building0);
-  water.material.uniforms['time'].value += 1.0/240.0;
-
-  //Animerer fly
-  moveAlongCurve();
-
-  renderer.render(scene, camera);
+    updateRendererSize();
+    renderer.render(scene, camera);
 }
 
 renderer.setAnimationLoop(loop);
