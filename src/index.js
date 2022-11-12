@@ -5,6 +5,10 @@ import { getHeightmapData } from "./utils.js";
 import TextureSplattingMaterial from "./TextureSplattingMaterial.js";
 import { OrbitControls } from "./OrbitControls.js";
 import {VRButton} from "../Common/VRButton.js";
+import {getModel, LODModel} from "../models/ModelLoader.js";
+import {Water} from "./Water.js";
+import {addTreeSprite} from "./sprite.js";
+import {GLTFLoader} from "./GLTFLoader.js";
 
 
 const renderer = new THREE.WebGLRenderer({
@@ -311,13 +315,7 @@ const material = new TextureSplattingMaterial({
 
 material.wireframe = false;
 
-scene.fog = new THREE.FogExp2(0xffffff,0.05);
-
-// Implement a centerNode -- Add planes
-const centerNode = new THREE.Group();
-
-// Add centerNode to scene
-scene.add(centerNode);
+scene.fog = new THREE.FogExp2(0xffffff,0.035);
 
 // Function to create plane
 function createPlane(size, texture, position) {
@@ -332,7 +330,6 @@ function createPlane(size, texture, position) {
   // Add to scene
   scene.add(plane);
   // Return plane
-  centerNode.add(plane);
   return plane;
 }
 
@@ -340,12 +337,13 @@ function createPlane(size, texture, position) {
 const warPlane = createPlane(0.5, new THREE.TextureLoader().load('images/rock.png'), {x: -5, y: 15, z: 0});
 const jetPlane = createPlane(1, new THREE.TextureLoader().load('images/rock.png'), {x: 5, y: 15, z: 0});
 
+
 // CatMulRomCurve3 closed loop for first plane
 const curve = new THREE.CatmullRomCurve3([
   new THREE.Vector3( -5, 15, 5 ),
   new THREE.Vector3( -2.5, 13, -2.5 ),
-  new THREE.Vector3( 5, 18, -5 ),
-  new THREE.Vector3( 2.5, 14, -2.5 ),
+  new THREE.Vector3( 5, 15, -5 ),
+  new THREE.Vector3( 5, 14, -2.5 ),
   new THREE.Vector3( 5, 19, 5 )
 ]);
 
@@ -362,7 +360,7 @@ curve.closed = true;
 const points = curve.getPoints( 50 );
 const geometryCurve = new THREE.BufferGeometry().setFromPoints( points );
 //Color of first curve
-const materialCurve = new THREE.LineBasicMaterial( { color : white, transparent : true, opacity : 0.0 } );
+const materialCurve = new THREE.LineBasicMaterial( { color : 0xff0000 } );
 const curveObject = new THREE.Line( geometryCurve, materialCurve );
 scene.add( curveObject );
 
@@ -374,9 +372,51 @@ const materialCurve2 = new THREE.LineBasicMaterial( { color : white, transparent
 const curveObject2 = new THREE.Line( geometryCurve2, materialCurve2 );
 scene.add( curveObject2 );
 
+
+const plane = new THREE.Object3D();
+
+// Load plane.glb
+const planeloader = new GLTFLoader();
+planeloader.load('models/planes/plane.glb', (gltf) => {
+    // Set plane position
+    gltf.scene.position.set(0, 0, 0);
+    // Set plane scale
+    gltf.scene.scale.set(0.1, 0.1, 0.1);
+    // Add shadow and light
+    gltf.scene.traverse(function (node) {
+        if (node.isMesh) {
+            node.receiveShadow = true;
+            node.castShadow = true;
+        }
+    } );
+    // Add plane to scene
+    scene.add(gltf.scene);
+    // Set plane as the object to be animated
+    plane.add(gltf.scene);
+});
+
+// Move plane along curve
+function animate() {
+    // Get time
+    const time = Date.now();
+    // Get position along curve
+    const position = curve.getPointAt( ( time % 10000 ) / 10000 );
+    // Get rotation along curve
+    const tangent = curve.getTangentAt( ( time % 10000 ) / 10000 ).normalize();
+    // Set plane position
+    plane.position.copy(position);
+    // Set plane rotation
+    const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), tangent);
+    plane.quaternion.copy(quaternion);
+    // Set plane scale
+    plane.scale.set(0.5, 0.5, 0.5);
+    // Add plane to scene
+    scene.add(plane);
+}
+
 // Move plane object along curve
 function moveAlongCurve() {
-  const t = Date.now() / 5000;
+  const t = Date.now() / 10000;
   const position = curve.getPointAt(t % 1);
   const tangent = curve.getTangentAt(t % 1);
   const up = new THREE.Vector3(0, 1, 0);
@@ -387,8 +427,8 @@ function moveAlongCurve() {
   const up2 = new THREE.Vector3(0, 1, 0);
   const quaternion2 = new THREE.Quaternion().setFromUnitVectors(up2, tangent2.normalize());
 
-  warPlane.position.copy(position);
-  warPlane.quaternion.copy(quaternion);
+  //warPlane.position.copy(position);
+  //warPlane.quaternion.copy(quaternion);
   jetPlane.position.copy(position2);
   jetPlane.quaternion.copy(quaternion2);
 }
@@ -424,6 +464,13 @@ function updateRendererSize() {
 
 function loop() {
     updateRendererSize();
+
+    // Move planes along curve
+    moveAlongCurve();
+    animate();
+    // Move water
+    water.material.uniforms.time.value += 1.0 / 240.0;
+
     renderer.render(scene, camera);
 }
 
