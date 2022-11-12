@@ -206,10 +206,11 @@ let building2 = [new THREE.Object3D(),
     new THREE.Object3D];
 
 let building3 = [new THREE.Object3D(),
+    new THREE.Object3D(),
     new THREE.Object3D()];
 
 let buildings = [building0,building1,building2,building3];
-const ranges = [[0.0,5.0,10.0,20.0,30.0],[0.0,30.0],[0.0,30.0],[0.0,30.0]];
+const ranges = [[0.0,5.0,10.0,20.0,30.0],[0.0,30.0],[0.0,30.0],[0.0,15.0,30.0]];
 
 const buildingUrl = 'models/building/building';
 
@@ -290,8 +291,8 @@ building2.forEach((building, index) => {
   }
 });
 
-amount = 1;
-done += 1;
+amount = 2;
+done += 2;
 
 building3.forEach((building, index) => {
   if(index < amount) {
@@ -317,7 +318,7 @@ building1[1].add(cube1.clone(true));
 
 building2[1].add(cube2.clone(true));
 
-building3[1].add(cube3.clone(true));
+building3[2].add(cube3.clone(true));
 
 // x = [-26 , -8]
 // y = [-28 ,-10]
