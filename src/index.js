@@ -1,14 +1,22 @@
 "use strict";
+//----------------------------------------------------------------------------------------
+//IMPORT
 
 import * as THREE from "./three.module.js";
 import { getHeightmapData } from "./utils.js";
 import TextureSplattingMaterial from "./TextureSplattingMaterial.js";
-import {getModel, loadModel, LODModel} from "../models/ModelLoader.js";
+import {getModel, loadCubeModel, loadModels, LODModel} from "../models/ModelLoader.js";
 import {OrbitControls} from "./OrbitControls.js";
 import {Water} from "./Water.js";
 import {VRButton} from "../Common/VRButton.js"
 
-
+//IMPORT END
+//----------------------------------------------------------------------------------------
+//INIT RENDERER
+/**
+ * setter opp renderer med canvas
+ * @type {WebGLRenderer}
+ */
 const renderer = new THREE.WebGLRenderer({
     canvas: document.querySelector("canvas"),
     antialias: true,
@@ -22,6 +30,10 @@ const white = new THREE.Color(THREE.Color.NAMES.white);
 renderer.setClearColor(white, 1.0);
 
 const scene = new THREE.Scene();
+
+//INIT RENDERER END
+//----------------------------------------------------------------------------------------
+//VR CAMERA
 
 //Camera for vr
 renderer.xr.enabled = true; // Enable VR
@@ -39,7 +51,11 @@ renderer.xr.addEventListener(`sessionstart`, function (){
 renderer.xr.addEventListener(`sessionend`, function (){
   scene.remove(vrCamera);
   camera.remove(vrCamera);
-})
+});
+
+//VR CAMERA END
+//----------------------------------------------------------------------------------------
+//PERSPECTIVE CAMERA
 
 const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
 
@@ -49,8 +65,10 @@ camera.lookAt(-10,0,-10);
 controls.update();
 
 scene.add(camera);
-//Camera end
 
+//PERSPECTIVE CAMERA END
+//----------------------------------------------------------------------------------------
+//SKYBOX
 
 const loader = new THREE.CubeTextureLoader();
 const texture = loader.load([
@@ -63,12 +81,96 @@ const texture = loader.load([
 ]);
 scene.background = texture;
 
-// TODO: implement terrain.
+//SKYBOX END
+//----------------------------------------------------------------------------------------
+//GROUND
+
 const size = 1024;
 const height = 4;
 const geometry = new THREE.PlaneGeometry(200, 200, size-1, size-1);
 
+geometry.rotateX((Math.PI / 180)*-90);
+const terrainImage = new Image();
+
+
+
+terrainImage.onload = () => {
+  const data = getHeightmapData(terrainImage,size);
+
+  for(let i = 0; i < data.length; i++){
+    geometry.attributes.position.setY(i, data[i] * height);
+
+  }
+
+  const mesh = new THREE.Mesh(geometry,material);
+
+  mesh.receiveShadow = true;
+
+  scene.add(mesh);
+};
+
+/**
+ * url til heightmap som skal brukes til byen
+ * @type {string}
+ */
+terrainImage.src = 'images/map/HeightMap.png';
+
+/**
+ *
+ * @param url - url til texturen
+ * @param scale - scaleringfaktoren
+ * @returns {*|Texture} - returnerer teksturobjekt
+ */
+function loadTexture(url,scale){
+  const texture = new THREE.TextureLoader().load(url);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.multiplyScalar(scale);
+  return texture;
+}
+
+/**
+ * teksturer til bakken
+ * @type {*|Texture}
+ */
+const road = loadTexture('images/ground/road.jpg',500);
+const ground = loadTexture('images/ground/ground.png',500);
+const marking = loadTexture('images/ground/marking.png',200);
+const people = loadTexture('images/ground/people.png',500);
+const grass1 = loadTexture('images/ground/grass.png', 1000);
+const grass2 = loadTexture('images/ground/grass2.png', 1000);
+const flower = loadTexture('images/ground/flower.png', 300);
+/**
+ * Maps til bakken
+ * @type {Texture|*}
+ */
+const alpha1 = new THREE.TextureLoader().load('images/map/sidewalk.png');
+const alpha2 = new THREE.TextureLoader().load('images/map/road.png');
+const alpha3 = new THREE.TextureLoader().load('images/map/people.png');
+const alpha4 = new THREE.TextureLoader().load('images/map/terrain.png');
+const alpha5 = new THREE.TextureLoader().load('images/map/grass.png');
+const alpha6 = new THREE.TextureLoader().load('images/map/flower.png');
+
+/**
+ * materiale som skal brukes for bakken.
+ * @type {TextureSplattingMaterial}
+ */
+const material = new TextureSplattingMaterial({
+  color: THREE.Color.NAMES.grey,
+  colorMaps: [road,ground,marking,people,grass1,grass2,flower],
+  alphaMaps: [alpha1,alpha2,alpha3,alpha4,alpha5,alpha6]
+});
+
+material.wireframe = false;
+
+//GROUND END
+//----------------------------------------------------------------------------------------
 //LIGHT
+
+/**
+ * lager hemispherelys som skal gjenskape dagslys
+ * @type {HemisphereLight}
+ */
 const hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
 hemiLight.color.setHSL(0.6,1,0.6);
 hemiLight.groundColor.setHSL(0.095,1,0.75);
@@ -78,6 +180,10 @@ scene.add(hemiLight);
 //const hemiLightHelper = new THREE.HemisphereLightHelper(hemiLight, 10);
 //scene.add(hemiLightHelper);
 
+/**
+ * lager retningslys som skal gjenskape direkte sollys og skygger
+ * @type {DirectionalLight}
+ */
 const dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
 dirLight.color.setHSL( 0.1, 1, 0.95 );
 dirLight.position.set( - 1, 1.75, 1 );
@@ -102,97 +208,14 @@ dirLight.shadow.bias = - 0.0001;
 //const dirLightHelper = new THREE.DirectionalLightHelper( dirLight, 10 );
 //scene.add( dirLightHelper );
 
+//LIGHT END
+//----------------------------------------------------------------------------------------
+//BUILDING
 
-
-geometry.rotateX((Math.PI / 180)*-90);
-const terrainImage = new Image();
-
-
-
-terrainImage.onload = () => {
-  const data = getHeightmapData(terrainImage,size);
-
-  for(let i = 0; i < data.length; i++){
-    geometry.attributes.position.setY(i, data[i] * height);
-
-  }
-
-  const mesh = new THREE.Mesh(geometry,material);
-
-  mesh.receiveShadow = true;
-
-  scene.add(mesh);
-};
-
-const texLoad0 = new THREE.TextureLoader();
-const texCube0 = texLoad0.load('models/building/textures/building0.jpg');
-
-texCube0.wrapS = THREE.RepeatWrapping;
-texCube0.wrapT = THREE.RepeatWrapping;
-
-texCube0.repeat.multiplyScalar(5);
-
-const cube0 = new THREE.Mesh(
-    new THREE.BoxGeometry(30,240,30),
-    new THREE.MeshPhongMaterial({
-      map: texCube0
-    })
-);
-cube0.receiveShadow = true;
-cube0.castShadow = true;
-
-const texLoad1 = new THREE.TextureLoader();
-const texCube1 = texLoad1.load('models/building/textures/building1.jpg');
-
-texCube1.wrapS = THREE.RepeatWrapping;
-texCube1.wrapT = THREE.RepeatWrapping;
-
-texCube1.repeat.multiplyScalar(2);
-
-const cube1 = new THREE.Mesh(
-    new THREE.BoxGeometry(30,240,30),
-    new THREE.MeshPhongMaterial({
-      map: texCube1
-    })
-);
-cube1.receiveShadow = true;
-cube1.castShadow = true;
-
-const texLoad2 = new THREE.TextureLoader();
-const texCube2 = texLoad2.load('models/building/textures/building2.jpg');
-
-texCube2.wrapS = THREE.RepeatWrapping;
-texCube2.wrapT = THREE.RepeatWrapping;
-
-texCube2.repeat.multiplyScalar(2);
-
-const cube2 = new THREE.Mesh(
-    new THREE.BoxGeometry(40,250,40),
-    new THREE.MeshPhongMaterial({
-      map: texCube2
-    })
-);
-cube2.receiveShadow = true;
-cube2.castShadow = true;
-
-const texLoad3 = new THREE.TextureLoader();
-const texCube3 = texLoad3.load('models/building/textures/building3.jpg');
-
-texCube3.wrapS = THREE.RepeatWrapping;
-texCube3.wrapT = THREE.RepeatWrapping;
-
-texCube3.repeat.multiplyScalar(5);
-
-const cube3 = new THREE.Mesh(
-    new THREE.BoxGeometry(55,130,75),
-    new THREE.MeshPhongMaterial({
-      map: texCube3
-    })
-);
-cube3.receiveShadow = true;
-cube3.castShadow = true;
-
-
+/**
+ * lager 4 lister med bygninger for hver type bygning i byen
+ * @type {Object3D[]}
+ */
 let building0 = [new THREE.Object3D(),
   new THREE.Object3D(),
   new THREE.Object3D(),
@@ -209,157 +232,123 @@ let building3 = [new THREE.Object3D(),
     new THREE.Object3D(),
     new THREE.Object3D()];
 
-let buildings = [building0,building1,building2,building3];
-const ranges = [[0.0,5.0,10.0,20.0,30.0],[0.0,30.0],[0.0,30.0],[0.0,15.0,30.0]];
+/**
+ * ligger alle listene av bygninger i en samlet liste
+ * @type {Object3D[][]}
+ */
+const buildings = [building0,building1,building2,building3];
+const ranges = [[0.0,5.0,10.0,20.0,30.0],[0.0,30.0],[0.0,30.0],[0.0,15.0,30.0]];  // avstanden lod skal bytte modell
+const amounts = [4,1,1,2];                                                        // antall modeller
+const scales = [[0.05,0.08,0.05],[0.9,0.9,1.2],[0.1,0.12,0.1],[0.08,0.10,0.05]];  // skaleringer
 
+/**
+ * url til bygningene
+ * @type {string}
+ */
 const buildingUrl = 'models/building/building';
 
+/**
+ * lager 4 kuber som skal fremstille laveste lod av bygningene
+ * @type {Raycaster.params.Mesh}
+ */
+const cube00 = loadCubeModel('models/building/textures/building0.jpg', 10, 1,19,1.7);
+cube00.position.set(1.1,0,0);
+const cube01 = loadCubeModel('models/building/textures/building0.jpg', 5, 1.9,3.5,1.9);
+cube01.position.set(-0.7,0,0);
+const cube1 = loadCubeModel('models/building/textures/building1.jpg', 2, 2,10,2);
+const cube2 = loadCubeModel('models/building/textures/building2.jpg', 2, 2,12.5,2);
+const cube3 = loadCubeModel('models/building/textures/building3.jpg', 2, 2,7,2);
 
-getModel('models/planes/plane.glb',0,(gltf,ind)=>{
-  gltf.scene.traverse(function (node) {
-    if (node.isMesh) {
-      node.receiveShadow = true;
-      node.castShadow = true;
-    }
-  });
-  gltf.scene.scale.set(0.1,0.12,0.1);
-  gltf.scene.position.set(5,15,5);
-  scene.add(gltf.scene);
-});
+/**
+ * ligger cubene til siste objektet i bygning listene
+ */
+building0[building0.length -1].add(cube00);
+building0[building0.length -1].add(cube01);
 
-let amount = 4;
-let done = 4;
+building1[building1.length -1].add(cube1);
 
-building0.forEach((building, index) => {
-  if(index < amount) {
-    getModel(buildingUrl + '0_' + index + '.glb', 0, (gltf, ind) => {
-      gltf.scene.traverse((node) => {
-        if (node.isMesh) {
-          node.receiveShadow = true;
-          node.castShadow = true;
-        }
-      });
-      building.add(gltf.scene);
-      gltf.scene.scale.set(1.0,1.0,1.0);
-      done--;
-    });
-  } else {
-    console.log(index);
-  }
-});
+building2[building2.length -1].add(cube2);
 
-amount = 1;
-done += 1;
+building3[building3.length -1].add(cube3);
 
-building1.forEach((building, index) => {
-  if(index < amount) {
-    getModel(buildingUrl + '1_' + index + '.glb', 0, (gltf, ind) => {
-      gltf.scene.traverse((node) => {
-        if (node.isMesh) {
-          node.receiveShadow = true;
-          node.castShadow = true;
-        }
-      });
-      building.add(gltf.scene);
-      gltf.scene.scale.set(15.0,20.0,15.0);
-      done--;
 
-    });
-  } else {
-    console.log(index);
-  }
-});
-
-amount = 1;
-done += 1;
-
-building2.forEach((building, index) => {
-  if(index < amount) {
-    getModel(buildingUrl + '2_' + index + '.glb', 0, (gltf, ind) => {
-      gltf.scene.traverse((node) => {
-        if (node.isMesh) {
-          node.receiveShadow = true;
-          node.castShadow = true;
-        }
-      });
-      building.add(gltf.scene);
-      gltf.scene.scale.set(2.0,2.5,2.0);
-      done--;
-    });
-  } else {
-    console.log(index);
-  }
-});
-
-amount = 2;
-done += 2;
-
-building3.forEach((building, index) => {
-  if(index < amount) {
-    getModel(buildingUrl + '3_' + index + '.glb', 0, (gltf, ind) => {
-      gltf.scene.traverse((node) => {
-        if (node.isMesh) {
-          node.receiveShadow = true;
-          node.castShadow = true;
-        }
-      });
-      building.add(gltf.scene);
-      gltf.scene.scale.set(2.0,2.0,1.5);
-      done--;
-    });
-  } else {
-    console.log(index);
-  }
-});
-
-building0[4].add(cube0.clone(true));
-
-building1[1].add(cube1.clone(true));
-
-building2[1].add(cube2.clone(true));
-
-building3[2].add(cube3.clone(true));
-
-// x = [-26 , -8]
-// y = [-28 ,-10]
-
-// max x [-95,95]
-// max y [-95,95]
-
-let maxDist = 35;
-let spacing = 3;
-
-function waitForElement() {
-  if(done > 0){
-    setTimeout(waitForElement,250);
-  } else {
-    let x = -maxDist;
-    let y = -maxDist;
-    while(x<maxDist){
-      while(y<maxDist){
-        if(Math.sqrt(x*x+y*y) < maxDist && (x < -26 || x > -8 || y < -28 || y > -10) && (x < -3 || x > 3 || y < -2 || y > 2)) {
-          const i = Math.floor(Math.random()*buildings.length);
-          const lod = LODModel(
-              buildings[i].map((model) => model.clone(true)),
-              scene,
-              0.04,
-              x + Math.random() - 0.5, 2.05, y + Math.random() - 0.5,
-              ranges[i]
-          );
-          scene.add(lod);
-        }
-        y += spacing;
+/**
+ * definerer maks distanse og mellomrom mellom bygningene, kan endres for å forbedre fps
+ * @type {number}
+ */
+const maxDist = 35;
+const spacing = 3;
+/**
+ * laster inn modeller og distribuerer de jevnt over byen
+ */
+loadModels(buildings, buildingUrl, '.glb', amounts, scales,()=>{
+  let x = -maxDist;
+  let y = -maxDist;
+  while(x<maxDist){
+    while(y<maxDist){
+      if(Math.sqrt(x*x+y*y) < maxDist
+          && (x < -26 || x > -8 || y < -28 || y > -10)
+          && (x < -3 || x > 3 || y < -2 || y > 2)) {
+        const i = Math.floor(Math.random()*buildings.length);
+        const lod = LODModel(
+            buildings[i].map((model) => model.clone(true)),
+            x + Math.random() - 0.5, 2.05, y + Math.random() - 0.5,
+            ranges[i]
+        );
+        lod.rotateY(Math.floor(Math.random()*4)*Math.PI/2);
+        scene.add(lod);
       }
-      y = -maxDist;
-      x += spacing;
+      y += spacing;
     }
+    y = -maxDist;
+    x += spacing;
   }
-}
-waitForElement();
+});
 
-//Water
+// BUILDING END
+//----------------------------------------------------------------------------------------
+//PLANE
+
+/**
+ * lager en liste av liste av 3DObjekter som flyene skal ligges til
+ * @type {Object3D[][]}
+ */
+const plane = [[new THREE.Object3D(),
+  new THREE.Object3D(),
+  new THREE.Object3D()]];
+
+const pranges = [0.0,5.0,10.0];         // avstanden lod skal bytte modell
+const pamounts = [3];                   // antall modeller
+const pscales = [[0.003,0.003,0.003]];  // skaleringer
+
+/**
+ * url til flymodellen
+ * @type {string}
+ */
+const planeUrl = 'models/planes/spitfire';
+
+/**
+ * laster inn flymodell
+ */
+loadModels(plane, planeUrl, '.glb', pamounts, pscales,()=> {
+  const lod = LODModel(
+      plane[0].map((model) => model.clone(true)),
+      10,15,10,
+      pranges
+  );
+  scene.add(lod);
+  lod.add(soundPlane);
+});
+
+//PLANE END
+//----------------------------------------------------------------------------------------
+//WATER
+
 const waterGeometry = new THREE.PlaneGeometry(2048,2048);
-
+/**
+ * legger til vann til scenen
+ * @type {Water}
+ */
 let water = new Water(waterGeometry,
     {
       textureWidth: 512,
@@ -371,14 +360,20 @@ let water = new Water(waterGeometry,
       sunColor: 0xffffff,
       waterColor: 0x001e0f,
       distortionScale: 3.7,
-      fog: scene.fog !== undefined
+      fog: true
     });
 water.rotation.x = -Math.PI / 2;
 water.position.setY(1.8);
 scene.add(water);
 
+//WATER END
+//----------------------------------------------------------------------------------------
+//MAIN BUILDING
 
-getModel('models/empire_state/empireState.glb',0,(model) => {
+/**
+ * legger modell i sentrum av byen
+ */
+getModel('models/empire_state/empireState.glb',(model) => {
   model.scene.position.set(0,2.05,0);
   model.scene.scale.set(0.04,0.04,0.04);
   model.scene.traverse(function (node) {
@@ -390,55 +385,46 @@ getModel('models/empire_state/empireState.glb',0,(model) => {
   scene.add(model.scene);
 });
 
-terrainImage.src = 'images/map/HeightMap.png';
+//MAIN BUILDING END
+//----------------------------------------------------------------------------------------
+//AUDIO
+const listener = new THREE.AudioListener();
+camera.add(listener);
 
-const road = new THREE.TextureLoader().load('images/ground/road.jpg');
-const ground = new THREE.TextureLoader().load('images/ground/ground.png');
-const marking = new THREE.TextureLoader().load('images/ground/marking.png');
-const people = new THREE.TextureLoader().load('images/ground/people.png');
-const grass1 = new THREE.TextureLoader().load('images/ground/grass.png');
-const grass2 = new THREE.TextureLoader().load('images/ground/grass2.png');
-const flower = new THREE.TextureLoader().load('images/ground/flower.png');
+const soundCity = new THREE.PositionalAudio(listener);
 
-const alpha1 = new THREE.TextureLoader().load('images/map/sidewalk.png');
-const alpha2 = new THREE.TextureLoader().load('images/map/road.png');
-const alpha3 = new THREE.TextureLoader().load('images/map/people.png');
-const alpha4 = new THREE.TextureLoader().load('images/map/terrain.png');
-const alpha5 = new THREE.TextureLoader().load('images/map/grass.png');
-const alpha6 = new THREE.TextureLoader().load('images/map/flower.png');
-
-road.wrapS = THREE.RepeatWrapping;
-ground.wrapS = THREE.RepeatWrapping;
-people.wrapS = THREE.RepeatWrapping;
-grass1.wrapS = THREE.RepeatWrapping;
-grass2.wrapS = THREE.RepeatWrapping;
-flower.wrapS = THREE.RepeatWrapping;
-
-road.wrapT = THREE.RepeatWrapping;
-ground.wrapT = THREE.RepeatWrapping;
-people.wrapT = THREE.RepeatWrapping;
-grass1.wrapT = THREE.RepeatWrapping;
-grass2.wrapT = THREE.RepeatWrapping;
-flower.wrapT = THREE.RepeatWrapping;
-
-road.repeat.multiplyScalar(500);
-ground.repeat.multiplyScalar(200);
-people.repeat.multiplyScalar(500);
-grass1.repeat.multiplyScalar(1000);
-grass2.repeat.multiplyScalar(1000);
-flower.repeat.multiplyScalar(300);
-
-const material = new TextureSplattingMaterial({
-  color: THREE.Color.NAMES.grey,
-  colorMaps: [road,ground,marking,people,grass1,grass2,flower],
-  alphaMaps: [alpha1,alpha2,alpha3,alpha4,alpha5,alpha6]
+const audioLoaderCity = new THREE.AudioLoader();
+audioLoaderCity.load('audio/city.mp3', (buffer) => {
+  soundCity.setBuffer(buffer);
+  soundCity.setRefDistance(3);
+  soundCity.setLoop(true);
 });
 
-material.wireframe = false;
+const soundPlane = new THREE.PositionalAudio(listener);
 
+const audioLoaderPlane = new THREE.AudioLoader();
+audioLoaderPlane.load('audio/spitfire.mp3', (buffer) => {
+  soundPlane.setBuffer(buffer);
+  soundPlane.setRefDistance(3);
+  soundPlane.setLoop(true);
+});
+
+scene.add(soundCity);
+
+//AUDIO END
+//----------------------------------------------------------------------------------------
+//FOG
+/**
+ * legger til tåke
+ * @type {FogExp2}
+ */
 scene.fog = new THREE.FogExp2(0xffffff,0.05);
-
-
+//FOG END
+//----------------------------------------------------------------------------------------
+//RENDERING
+/**
+ * oppdaterer renderstørrelsen ved endring av størrelsen på canvas
+ */
 function updateRendererSize() {
   const { x: currentWidth, y: currentHeight } = renderer.getSize(
     new THREE.Vector2()
@@ -453,13 +439,33 @@ function updateRendererSize() {
   }
 }
 
+let start = performance.now()*0.0001;
+
+/**
+ * animasjonsloop
+ */
+
+addEventListener('click', (event) => {
+  if(!soundCity.isPlaying){
+    soundCity.play(Math.random());
+  }
+  if(!soundPlane.isPlaying){
+    soundPlane.play(Math.random());
+  }
+});
+
 function loop() {
   updateRendererSize();
-  water.material.uniforms['time'].value += 1.0/240.0;
 
-  console.log(building1);
+  const time = performance.now()*0.0001;
+  water.material.uniforms['time'].value += time - start;
+  start = time;
+
+  //console.log(buildings);
 
   renderer.render(scene, camera);
 }
 
 renderer.setAnimationLoop(loop);
+//RENDERING END
+//----------------------------------------------------------------------------------------
