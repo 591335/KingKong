@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b5cfb1d2-c1a9-4e0f-ba40-e7db4859941c" name="Changes" comment="added VR">
+    <list default="true" id="b5cfb1d2-c1a9-4e0f-ba40-e7db4859941c" name="Changes" comment="lagt til ny LOD objekt for bygning 3">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/map/people.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/map/people.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/map/road.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/map/road.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/map/sidewalk.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/map/sidewalk.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/ModelLoader.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/ModelLoader.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/planes/plane.glb" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -66,12 +72,13 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0c85c56e-ccf4-40c2-adc6-e4f447d7cd6b" name="Changes" comment="" />
+      <changelist id="b5cfb1d2-c1a9-4e0f-ba40-e7db4859941c" name="Changes" comment="lagt til ny LOD objekt for bygning 3" />
       <created>1668110342305</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1668110342305</updated>
       <workItem from="1668110343685" duration="9336000" />
+      <workItem from="1668342129577" duration="15478000" />
     </task>
     <task id="LOCAL−00001" summary="merging">
       <created>1668165058015</created>
@@ -85,7 +92,25 @@
       <option name="presentableId" value="LOCAL−00002" />
       <updated>1668165840367</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL−00003" summary="lagt til fly">
+      <created>1668266737492</created>
+      <option name="number" value="LOCAL−00003" />
+      <option name="presentableId" value="LOCAL−00003" />
+      <updated>1668266737492</updated>
+    </task>
+    <task id="LOCAL−00004" summary="lagt til 2 nye bygninger, fikset en lod figurer, lagt til 6 nye map og tektsturer for bakken.">
+      <created>1668293236281</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1668293236281</updated>
+    </task>
+    <task id="LOCAL−00005" summary="lagt til ny LOD objekt for bygning 3">
+      <created>1668293483583</created>
+      <option name="number" value="LOCAL−00005" />
+      <option name="presentableId" value="LOCAL−00005" />
+      <updated>1668293483583</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -105,6 +130,9 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="merging" />
     <MESSAGE value="added VR" />
-    <option name="LAST_COMMIT_MESSAGE" value="added VR" />
+    <MESSAGE value="lagt til fly" />
+    <MESSAGE value="lagt til 2 nye bygninger, fikset en lod figurer, lagt til 6 nye map og tektsturer for bakken." />
+    <MESSAGE value="lagt til ny LOD objekt for bygning 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="lagt til ny LOD objekt for bygning 3" />
   </component>
 </project>
