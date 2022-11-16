@@ -9,6 +9,7 @@ import {getModel, loadCubeModel, loadModels, LODModel} from "../models/ModelLoad
 import {OrbitControls} from "./OrbitControls.js";
 import {Water} from "./Water.js";
 import {VRButton} from "../Common/VRButton.js"
+import {addTreeSprite} from "./Sprite.js";
 
 //IMPORT END
 //----------------------------------------------------------------------------------------
@@ -276,7 +277,7 @@ building3[building3.length -1].add(cube3);
  * definerer maks distanse og mellomrom mellom bygningene, kan endres for å forbedre fps
  * @type {number}
  */
-const maxDist = 0;
+const maxDist = 30;
 const spacing = 3;
 /**
  * laster inn modeller og distribuerer de jevnt over byen
@@ -336,16 +337,15 @@ const plane2 = new THREE.Object3D();
 loadModels(plane, planeUrl, '.glb', pamounts, pscales,()=> {
   const lod = LODModel(
       plane[0].map((model) => model.clone(true)),
-      10,15,10,
+      0,0,0,
       pranges
   );
-  lod.add(soundPlane);
   plane1.add(lod.clone(true));
   plane2.add(lod.clone(true));
 });
 
 // CatMulRomCurve3 closed loop for first plane
-const curve = new THREE.CatmullRomCurve3([
+const curve1 = new THREE.CatmullRomCurve3([
   new THREE.Vector3( -5, 15, 5 ),
   new THREE.Vector3( -2.5, 13, -2.5 ),
   new THREE.Vector3( 5, 18, -5 ),
@@ -361,9 +361,15 @@ const curve2 = new THREE.CatmullRomCurve3([
   new THREE.Vector3( -2.5, 14, -2.5 ),
   new THREE.Vector3( 6, 19, -5 )
 ]);
+
+
+
+scene.add(plane1);
+scene.add(plane2);
+
 // Ends meet
-curve.closed = true;
-const points = curve.getPoints( 50 );
+curve1.closed = true;
+const points = curve1.getPoints( 50 );
 const geometryCurve = new THREE.BufferGeometry().setFromPoints( points );
 //Color of first curve
 const materialCurve = new THREE.LineBasicMaterial( { color : white, transparent : true, opacity : 0.0 } );
@@ -379,7 +385,7 @@ const curveObject2 = new THREE.Line( geometryCurve2, materialCurve2 );
 scene.add( curveObject2 );
 
 // Move plane along curve
-function animate1() {
+function animate(plane,curve) {
   // Get time
   const time = Date.now();
   // Get position along curve
@@ -387,36 +393,25 @@ function animate1() {
   // Get rotation along curve
   const tangent = curve.getTangentAt( ( time % 10000 ) / 10000 ).normalize();
   // Set plane position
-  plane1.position.copy(position);
+  plane.position.copy(position);
   // Set plane rotation
-  const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), tangent);
-  plane1.quaternion.copy(quaternion);
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), tangent);
+  plane.quaternion.copy(quaternion);
   // Set plane scale
-  plane1.scale.set(0.5, 0.5, 0.5);
+  //plane.scale.set(0.5, 0.5, 0.5);
   // Add plane to scene
-  scene.add(plane1);
-}
-
-// Move plane2 along curve
-function animate2() {
-  // Get time
-  const time = Date.now();
-  // Get position along curve
-  const position = curve2.getPointAt( ( time % 10000 ) / 10000 );
-  // Get rotation along curve
-  const tangent = curve2.getTangentAt( ( time % 10000 ) / 10000 ).normalize();
-  // Set plane position
-  plane2.position.copy(position);
-  // Set plane rotation
-  const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), tangent);
-  plane2.quaternion.copy(quaternion);
-  // Set plane scale
-  plane2.scale.set(0.5, 0.5, 0.5);
-  // Add plane to scene
-  scene.add(plane2);
 }
 
 //PLANE END
+//----------------------------------------------------------------------------------------
+//TREE
+//første klynge
+addTreeSprite(-20,-8, 3, -17, -11, scene);
+//andre klynge
+addTreeSprite(-28,-10, 3.24, -28, -18, scene);
+//tredje klynge
+addTreeSprite(-20,-8, 3.5, -28, -17, scene);
+//TREE END
 //----------------------------------------------------------------------------------------
 //WATER
 
@@ -476,16 +471,28 @@ audioLoaderCity.load('audio/city.mp3', (buffer) => {
   soundCity.setLoop(true);
 });
 
-const soundPlane = new THREE.PositionalAudio(listener);
+const soundPlane1 = new THREE.PositionalAudio(listener);
+const soundPlane2 = new THREE.PositionalAudio(listener);
 
-const audioLoaderPlane = new THREE.AudioLoader();
-audioLoaderPlane.load('audio/spitfire.mp3', (buffer) => {
-  soundPlane.setBuffer(buffer);
-  soundPlane.setRefDistance(3);
-  soundPlane.setLoop(true);
+const audioLoaderPlane1 = new THREE.AudioLoader();
+audioLoaderPlane1.load('audio/spitfire1.mp3', (buffer) => {
+  soundPlane1.setBuffer(buffer);
+  soundPlane1.setRefDistance(3);
+  soundPlane1.setLoop(true);
 });
 
+const audioLoaderPlane2 = new THREE.AudioLoader();
+audioLoaderPlane2.load('audio/spitfire2.mp3', (buffer) => {
+  soundPlane2.setBuffer(buffer);
+  soundPlane2.setRefDistance(3);
+  soundPlane2.setLoop(true);
+});
+
+plane1.add(soundPlane1);
+plane2.add(soundPlane2);
+
 scene.add(soundCity);
+
 
 //AUDIO END
 //----------------------------------------------------------------------------------------
@@ -494,7 +501,7 @@ scene.add(soundCity);
  * legger til tåke
  * @type {FogExp2}
  */
-//scene.fog = new THREE.FogExp2(0xffffff,0.05);
+//  scene.fog = new THREE.FogExp2(0xffffff,0.05);
 //FOG END
 //----------------------------------------------------------------------------------------
 //RENDERING
@@ -525,16 +532,19 @@ addEventListener('click', (event) => {
   if(!soundCity.isPlaying){
     soundCity.play(Math.random());
   }
-  if(!soundPlane.isPlaying){
-    soundPlane.play(Math.random());
+  if(!soundPlane1.isPlaying){
+    soundPlane1.play(Math.random());
+  }
+  if(!soundPlane2.isPlaying){
+    soundPlane2.play(Math.random());
   }
 });
 
 function loop() {
   updateRendererSize();
 
-  animate1();
-  animate2();
+  animate(plane1,curve1);
+  animate(plane2,curve2);
 
   const time = performance.now()*0.0001;
   water.material.uniforms['time'].value += time - start;

@@ -35,21 +35,17 @@ function randn_bm(min, max, skew) {
 }
 //adds a set number of sprites using createTreeSprite function with random positions using Gaussian random number generator
 //Can add parameters to change the number of sprites and position range
-function addTreeSprite(scene){
+function addTreeSprite(xmax,xmin,y,zmax,zmin,scene){
     for(let i = 0; i < 60; i++){
         //Old distribution using Math.random
         //       const rndInt = Math.floor((Math.random() * -600) + -200) / 100;
         //       const rndInt2 = Math.floor((Math.random() * -700) + -200) / 100;
-        const rndInt = randn_bm(-0, -10, 1);
-        const rndInt2 = randn_bm(-0, -11, 1);
-        console.log(rndInt);
-        console.log(rndInt2);
+        const rndInt = randn_bm(xmin, xmax, 1);
+        const rndInt2 = randn_bm(zmin, zmax, 1);
         //String name that has index
         //const y = getHeightAt(rndInt, rndInt2, scene);
         let name = "sprite" + i;
-        console.log(name);
-        createTreeSprite(rndInt, 1, rndInt2, name, scene);
+        createTreeSprite(rndInt, y, rndInt2, name, scene);
     }
 }
-
-export {addTreeSprite};
+export { addTreeSprite };
