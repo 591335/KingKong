@@ -4,13 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="b5cfb1d2-c1a9-4e0f-ba40-e7db4859941c" name="Changes" comment="lagt til ny LOD objekt for bygning 3">
+    <list default="true" id="b5cfb1d2-c1a9-4e0f-ba40-e7db4859941c" name="Changes" comment="added VR">
+      <change afterPath="$PROJECT_DIR$/src/Sprite.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/map/people.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/map/people.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/map/road.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/map/road.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/images/map/sidewalk.png" beforeDir="false" afterPath="$PROJECT_DIR$/images/map/sidewalk.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/ModelLoader.js" beforeDir="false" afterPath="$PROJECT_DIR$/models/ModelLoader.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/planes/plane.glb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/HeightMap.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/byMiljo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/road.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/sky.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/images/waternormals.jpg" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

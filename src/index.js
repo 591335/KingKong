@@ -276,7 +276,7 @@ building3[building3.length -1].add(cube3);
  * definerer maks distanse og mellomrom mellom bygningene, kan endres for å forbedre fps
  * @type {number}
  */
-const maxDist = 35;
+const maxDist = 0;
 const spacing = 3;
 /**
  * laster inn modeller og distribuerer de jevnt over byen
@@ -327,6 +327,9 @@ const pscales = [[0.003,0.003,0.003]];  // skaleringer
  */
 const planeUrl = 'models/planes/spitfire';
 
+const plane1 = new THREE.Object3D();
+const plane2 = new THREE.Object3D();
+
 /**
  * laster inn flymodell
  */
@@ -336,9 +339,82 @@ loadModels(plane, planeUrl, '.glb', pamounts, pscales,()=> {
       10,15,10,
       pranges
   );
-  scene.add(lod);
   lod.add(soundPlane);
+  plane1.add(lod.clone(true));
+  plane2.add(lod.clone(true));
 });
+
+// CatMulRomCurve3 closed loop for first plane
+const curve = new THREE.CatmullRomCurve3([
+  new THREE.Vector3( -5, 15, 5 ),
+  new THREE.Vector3( -2.5, 13, -2.5 ),
+  new THREE.Vector3( 5, 18, -5 ),
+  new THREE.Vector3( 2.5, 14, -2.5 ),
+  new THREE.Vector3( 5, 19, 5 )
+]);
+
+// CatMulRomCurve3 closed loop for second plane
+const curve2 = new THREE.CatmullRomCurve3([
+  new THREE.Vector3( 6, 15, 4 ),
+  new THREE.Vector3( -2.5, 16, 2.5 ),
+  new THREE.Vector3( -2.5, 19, 2.5 ),
+  new THREE.Vector3( -2.5, 14, -2.5 ),
+  new THREE.Vector3( 6, 19, -5 )
+]);
+// Ends meet
+curve.closed = true;
+const points = curve.getPoints( 50 );
+const geometryCurve = new THREE.BufferGeometry().setFromPoints( points );
+//Color of first curve
+const materialCurve = new THREE.LineBasicMaterial( { color : white, transparent : true, opacity : 0.0 } );
+const curveObject = new THREE.Line( geometryCurve, materialCurve );
+scene.add( curveObject );
+
+curve2.closed = true;
+const points2 = curve2.getPoints( 50 );
+const geometryCurve2 = new THREE.BufferGeometry().setFromPoints( points2 );
+//Color of second curve
+const materialCurve2 = new THREE.LineBasicMaterial( { color : white, transparent : true, opacity : 0.0 } );
+const curveObject2 = new THREE.Line( geometryCurve2, materialCurve2 );
+scene.add( curveObject2 );
+
+// Move plane along curve
+function animate1() {
+  // Get time
+  const time = Date.now();
+  // Get position along curve
+  const position = curve.getPointAt( ( time % 10000 ) / 10000 );
+  // Get rotation along curve
+  const tangent = curve.getTangentAt( ( time % 10000 ) / 10000 ).normalize();
+  // Set plane position
+  plane1.position.copy(position);
+  // Set plane rotation
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), tangent);
+  plane1.quaternion.copy(quaternion);
+  // Set plane scale
+  plane1.scale.set(0.5, 0.5, 0.5);
+  // Add plane to scene
+  scene.add(plane1);
+}
+
+// Move plane2 along curve
+function animate2() {
+  // Get time
+  const time = Date.now();
+  // Get position along curve
+  const position = curve2.getPointAt( ( time % 10000 ) / 10000 );
+  // Get rotation along curve
+  const tangent = curve2.getTangentAt( ( time % 10000 ) / 10000 ).normalize();
+  // Set plane position
+  plane2.position.copy(position);
+  // Set plane rotation
+  const quaternion = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), tangent);
+  plane2.quaternion.copy(quaternion);
+  // Set plane scale
+  plane2.scale.set(0.5, 0.5, 0.5);
+  // Add plane to scene
+  scene.add(plane2);
+}
 
 //PLANE END
 //----------------------------------------------------------------------------------------
@@ -418,7 +494,7 @@ scene.add(soundCity);
  * legger til tåke
  * @type {FogExp2}
  */
-scene.fog = new THREE.FogExp2(0xffffff,0.05);
+//scene.fog = new THREE.FogExp2(0xffffff,0.05);
 //FOG END
 //----------------------------------------------------------------------------------------
 //RENDERING
@@ -456,6 +532,9 @@ addEventListener('click', (event) => {
 
 function loop() {
   updateRendererSize();
+
+  animate1();
+  animate2();
 
   const time = performance.now()*0.0001;
   water.material.uniforms['time'].value += time - start;
